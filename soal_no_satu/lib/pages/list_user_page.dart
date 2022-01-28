@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:widya_matador/componets/custom_dialog_question.dart';
 import 'package:widya_matador/controllers/list_user_controller.dart';
 import 'package:widya_matador/helper/constants.dart';
 import 'package:widya_matador/helper/my_helper.dart';
 import 'package:widya_matador/helper/screen.dart';
-
-final listUserController = Get.put(ListUserController());
+import 'package:widya_matador/pages/detail_user_page.dart';
+import 'package:widya_matador/pages/form_user_page.dart';
 
 class ListUserPage extends StatelessWidget {
   const ListUserPage({Key? key}) : super(key: key);
@@ -15,6 +16,7 @@ class ListUserPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Screen size = Screen(MediaQuery.of(context).size);
+    final listUserController = Get.put(ListUserController());
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF0D47A1),
@@ -28,18 +30,32 @@ class ListUserPage extends StatelessWidget {
       body: Container(
         color: Constants.BACKGROUND_COLOR,
         child: Obx(
-          () => (listUserController.isLoading.value)
-              ? const ContentLoading()
-              : (listUserController.isError.value)
-                  ? const ContentError()
-                  : const ContentSuccess(),
+          () {
+            return (listUserController.isLoading.value)
+                ? const ContentLoading()
+                : (listUserController.isError.value)
+                    ? const ContentError()
+                    : const ContentSuccess();
+          },
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        tooltip: 'Add',
-        child: const Icon(Icons.add),
-        backgroundColor: const Color(0xFF0D47A1),
+      floatingActionButton: Obx(
+        () => Visibility(
+          visible: !listUserController.isLoading.value,
+          child: FloatingActionButton(
+            onPressed: () async {
+              dynamic result = await Get.to(
+                () => const FormUserPage(data: null),
+              );
+              if (result != null) {
+                listUserController.onRefresh();
+              }
+            },
+            tooltip: 'Add',
+            child: const Icon(Icons.add),
+            backgroundColor: const Color(0xFF0D47A1),
+          ),
+        ),
       ),
     );
   }
@@ -52,6 +68,7 @@ class ContentSuccess extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final listUserController = Get.find<ListUserController>();
     return Obx(
       () => (listUserController.responseList.isNotEmpty)
           ? const ListData()
@@ -67,6 +84,7 @@ class DataEmpty extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final listUserController = Get.find<ListUserController>();
     Screen size = Screen(MediaQuery.of(context).size);
     return SmartRefresher(
       controller: RefreshController(),
@@ -108,6 +126,7 @@ class ListData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final listUserController = Get.find<ListUserController>();
     return Obx(
       () => SmartRefresher(
         controller: RefreshController(),
@@ -142,17 +161,96 @@ class ItemData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final listUserController = Get.find<ListUserController>();
     Screen size = Screen(MediaQuery.of(context).size);
     return InkWell(
-      onTap: () async {},
+      onTap: () {
+        Get.bottomSheet(
+          Container(
+            color: Colors.white,
+            child: Wrap(
+              children: <Widget>[
+                ListTile(
+                  leading: Icon(
+                    Icons.remove_red_eye,
+                    color: Colors.grey[700],
+                    size: size.getWidthPx(25),
+                  ),
+                  title: Text(
+                    'Detail Data',
+                    style: TextStyle(
+                      fontSize: size.getWidthPx(16),
+                    ),
+                  ),
+                  onTap: () async {
+                    Get.back();
+                    Get.to(() => DetailUserpage(data: item));
+                  },
+                ),
+                ListTile(
+                  leading: Icon(
+                    Icons.edit,
+                    color: Colors.grey[700],
+                    size: size.getWidthPx(25),
+                  ),
+                  title: Text(
+                    'Ubah Data',
+                    style: TextStyle(
+                      fontSize: size.getWidthPx(16),
+                    ),
+                  ),
+                  onTap: () async {
+                    Get.back();
+                    dynamic result = await Get.to(
+                      () => FormUserPage(data: item),
+                    );
+                    if (result != null) {
+                      listUserController.onRefresh();
+                    }
+                  },
+                ),
+                ListTile(
+                  leading: Icon(
+                    Icons.delete,
+                    color: Colors.grey[700],
+                    size: size.getWidthPx(25),
+                  ),
+                  title: Text(
+                    'Hapus Data',
+                    style: TextStyle(
+                      fontSize: size.getWidthPx(16),
+                    ),
+                  ),
+                  onTap: () {
+                    Get.back();
+                    Get.generalDialog(
+                      pageBuilder: (context, animation, secondaryAnimation) {
+                        return CustomDialogQuestion(
+                          title: "",
+                          onTapOke: () async {
+                            Get.back();
+                            listUserController.onRemoveUser(item['user_id']);
+                          },
+                          desc:
+                              "Apakahan Anda yakin ingin menghapus data user ?",
+                        );
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             margin: EdgeInsets.only(
-              top: size.getWidthPx(16),
-              bottom: size.getWidthPx(16),
+              top: size.getWidthPx(12),
+              bottom: size.getWidthPx(12),
               left: size.getWidthPx(16),
               right: size.getWidthPx(16),
             ),
@@ -175,6 +273,7 @@ class ItemData extends StatelessWidget {
                     child: Center(
                       child: Text(
                         "${item['user_initial']}",
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: size.getWidthPx(16),
                           color: Colors.white,
@@ -227,7 +326,9 @@ class ContentError extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final listUserController = Get.find<ListUserController>();
     Screen size = Screen(MediaQuery.of(context).size);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,

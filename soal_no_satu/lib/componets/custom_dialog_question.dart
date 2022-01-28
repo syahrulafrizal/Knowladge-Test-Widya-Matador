@@ -59,7 +59,7 @@ class _CustomDialogQuestionState extends State<CustomDialogQuestion> {
                       style: TextStyle(
                         color: Colors.grey[600],
                         fontWeight: FontWeight.w500,
-                        fontSize: size.getWidthPx(13),
+                        fontSize: size.getWidthPx(14),
                       ),
                     )
                   ],
@@ -91,7 +91,7 @@ class _CustomDialogQuestionState extends State<CustomDialogQuestion> {
                               "Batal",
                               style: TextStyle(
                                 color: Colors.red,
-                                fontSize: size.getWidthPx(13),
+                                fontSize: size.getWidthPx(14),
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -116,7 +116,7 @@ class _CustomDialogQuestionState extends State<CustomDialogQuestion> {
                               "Oke",
                               style: TextStyle(
                                 color: Colors.green,
-                                fontSize: size.getWidthPx(13),
+                                fontSize: size.getWidthPx(14),
                                 fontWeight: FontWeight.w600,
                               ),
                             ),

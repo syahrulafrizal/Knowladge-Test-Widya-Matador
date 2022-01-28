@@ -1,9 +1,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.syahrul.widya_matador">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+
    <application
+        android:usesCleartextTraffic="true"
         android:label="Knowladge Test Widya Matador"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
+        android:fullBackupContent="false">
         <activity
             android:name=".MainActivity"
             android:exported="true"

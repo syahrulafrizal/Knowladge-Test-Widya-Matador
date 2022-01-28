@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:widya_matador/helper/screen.dart';
+
 class CustomDialogInformation extends StatefulWidget {
   final dynamic title, desc, color, icon, onTap;
   const CustomDialogInformation({
@@ -60,7 +61,7 @@ class _CustomDialogInformationState extends State<CustomDialogInformation> {
                       style: TextStyle(
                         color: Colors.grey[600],
                         fontWeight: FontWeight.w500,
-                        fontSize: size.getWidthPx(13),
+                        fontSize: size.getWidthPx(14),
                       ),
                     )
                   ],
